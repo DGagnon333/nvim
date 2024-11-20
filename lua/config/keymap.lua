@@ -21,8 +21,8 @@ vim.keymap.set('n', '<C-Del>', "ce")
 -- vim.keymap.set('n', '<C-backspace>', "<Esc>cb")
 
 -- vim.keymap.set('n', '<leader>q', ':q!<CR>:q!<CR>:q!<CR>')
-vim.keymap.set({ 'n', 't', 'v' }, '<leader>q', ':qa<CR>:qa<CR>:qa<CR>')
-vim.keymap.set({ 'n', 't', 'v' }, '<leader>Q', ':q!<CR>:q!<CR>:q!<CR>')
+vim.keymap.set({ 'n', 't', 'v' }, '<leader>q', ':x<CR>')
+vim.keymap.set({ 'n', 't', 'v' }, '<leader>Q', ':q!')
 
 -- Split navigation and management
 vim.keymap.set('n', '<leader>bb', ':bprev<CR>', { desc = 'Goto Previous Buffer', silent = true })
@@ -36,18 +36,36 @@ vim.keymap.set('n', '<leader>bC', "<cmd>%bd|e#|bd#<CR>", { desc = 'Close All Buf
 vim.keymap.set('n', '<leader>br', "<cmd>:e!<CR>", { desc = 'Reload Buffer' })
 
 -- Move between splits
-vim.keymap.set({ 'n', }, '<C-h>', ':wincmd h<CR>', { desc = 'Goto Left Buffer', silent = true })
-vim.keymap.set({ 'n', }, '<C-l>', ':wincmd l<CR>', { desc = 'Goto Right Buffer', silent = true })
-vim.keymap.set({ 'n', }, '<C-j>', ':wincmd j<CR>', { desc = 'Goto Below Buffer', silent = true })
-vim.keymap.set({ 'n', }, '<C-k>', ':wincmd k<CR>', { desc = 'Goto Above Buffer', silent = true })
+local function create_or_move(direction)
+    -- Get current window number
+    local current_window = vim.fn.winnr()
 
-vim.keymap.set('t', '<C-h>', '[[<Cmd>wincmd h<CR>]]', { desc = 'Goto Left Buffer', silent = true, buffer = 0 })
-vim.keymap.set('t', '<C-l>', '[[<Cmd>wincmd l<CR>]]', { desc = 'Goto Right Buffer', silent = true, buffer = 0 })
-vim.keymap.set('t', '<C-j>', '[[<Cmd>wincmd j<CR>]]', { desc = 'Goto Below Buffer', silent = true, buffer = 0 })
-vim.keymap.set('t', '<C-k>', '[[<Cmd>wincmd k<CR>]]', { desc = 'Goto Above Buffer', silent = true, buffer = 0 })
+    -- Attempt to move to the specified direction
+    vim.cmd('wincmd ' .. direction)
 
+    -- Check if the window number has changed
+    if vim.fn.winnr() == current_window then
+        -- No window exists in the specified direction; create one
+        if direction == 'h' then
+            vim.cmd('leftabove vsplit')
+        elseif direction == 'l' then
+            vim.cmd('rightbelow vsplit')
+        elseif direction == 'j' then
+            vim.cmd('rightbelow split')
+        elseif direction == 'k' then
+            vim.cmd('leftabove split')
+        end
+    end
 
-vim.keymap.set('n', "<S-q>", '<cmd>:q<CR>', { desc = "Close Without Saving" })
+    -- Move to the newly created or existing window
+    vim.cmd('wincmd ' .. direction)
+end
+vim.keymap.set('n', '<S-h>', function() create_or_move('h') end, { desc = 'Goto or create left buffer', silent = true })
+vim.keymap.set('n', '<S-l>', function() create_or_move('l') end, { desc = 'Goto or create right buffer', silent = true })
+vim.keymap.set('n', '<S-j>', function() create_or_move('j') end, { desc = 'Goto or create below buffer', silent = true })
+vim.keymap.set('n', '<S-k>', function() create_or_move('k') end, { desc = 'Goto or create above buffer', silent = true })
+
+-- vim.keymap.set('n', "<S-q>", '<cmd>:q<CR>', { desc = "Close Without Saving" })
 
 -- Reise splits
 -- vim.keymap.set({ 'n', 't' }, '<S-Left>', ':vertical-resize +1<CR>', { silent = true })
@@ -56,8 +74,8 @@ vim.keymap.set({ 'n', 't' }, '<S-Left>', ':vertical res +1^M<CR>', { silent = tr
 vim.keymap.set({ 'n', 't' }, '<S-Right>', ':vertical res -1^M<CR>', { silent = true })
 vim.keymap.set({ 'n', 't' }, '<C-Up>', ':resize -1<CR>', { silent = true })
 vim.keymap.set({ 'n', 't' }, '<C-Down>', ':resize +1<CR>', { silent = true })
-vim.keymap.set({ 'n' }, '<S-l>', '10zl', { desc = "Scroll To The Right", silent = true })
-vim.keymap.set({ 'n' }, '<S-h>', '10zh', { desc = "Scroll To The Left", silent = true })
+-- vim.keymap.set({ 'n' }, '<S-l>', '10zl', { desc = "Scroll To The Right", silent = true })
+-- vim.keymap.set({ 'n' }, '<S-h>', '10zh', { desc = "Scroll To The Left", silent = true })
 -- Move current line / block with Alt-j/k a la vscode.
 vim.keymap.set('n', "<M-Down>", ":m .+1<CR>==", { silent = true })
 vim.keymap.set('n', "<M-Up>", ":m .-2<CR>==", { silent = true })
