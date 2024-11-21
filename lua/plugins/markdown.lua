@@ -8,20 +8,18 @@ return {
 		config = function()
 			local obsidian = require("obsidian")
 			obsidian.setup({
-				dir = "~/vaults", -- Replace with your Obsidian vault path
+				dir = "~/vaults", -- Set your Obsidian vault path
+				use_current_dir = false, -- Allows using Obsidian commands outside the vault
 				completion = {
 					nvim_cmp = true, -- Enable completion with nvim-cmp
 				},
 				ui = {
-					-- Enable additional UI features
 					enable = true,
 				},
-				-- Configure how URLs are opened
 				follow_url_func = function(url)
 					-- For macOS
 					vim.fn.jobstart({ "open", url }, { detach = true })
-
-					-- For Linux (uncomment the following line and comment out the macOS line)
+					-- For Linux:
 					-- vim.fn.jobstart({ "xdg-open", url }, { detach = true })
 				end,
 			})
@@ -37,16 +35,16 @@ return {
 			-- Keymaps for Obsidian commands
 			local opts = { noremap = true, silent = true }
 
-			-- Open Obsidian Quick Switcher
 			vim.keymap.set("n", "<leader>oo", ":ObsidianQuickSwitch<CR>", opts)
-
-			-- Create a new note
 			vim.keymap.set("n", "<leader>on", ":ObsidianNew<CR>", opts)
-
-			-- Open Obsidian Search
 			vim.keymap.set("n", "<leader>os", ":ObsidianSearch<CR>", opts)
-
-			-- Follow link under cursor
+			vim.keymap.set("n", "<leader>od", ":ObsidianToday<CR>", opts)
+			vim.keymap.set("n", "<leader>oy", ":ObsidianYesterday<CR>", opts)
+			vim.keymap.set("n", "<leader>ob", function()
+				vim.fn.jobstart({ "open", obsidian.config.dir }, { detach = true })
+				-- For Linux:
+				-- vim.fn.jobstart({ "xdg-open", obsidian.config.dir }, { detach = true })
+			end, opts)
 			vim.keymap.set("n", "gf", function()
 				if obsidian.util.cursor_on_markdown_link() then
 					return obsidian.follow_link()
@@ -55,55 +53,59 @@ return {
 				end
 			end, { noremap = false, expr = true })
 
-			-- Open Obsidian in the default browser
-			vim.keymap.set("n", "<leader>ob", function()
-				-- For macOS
-				vim.fn.jobstart({ "open", obsidian.config.dir }, { detach = true })
+			-- **Markdown Formatting Keymaps Using Custom Plugin**
 
-				-- For Linux (uncomment the following line and comment out the macOS line)
-				-- vim.fn.jobstart({ "xdg-open", obsidian.config.dir }, { detach = true })
-			end, opts)
+			-- Require the custom formatter module
+			local formatter = require("custom.markdown_formatter")
 
-			-- Search in Obsidian vault
-			vim.keymap.set("n", "<leader>og", ":ObsidianSearch<CR>", opts)
+			-- Keymap to toggle bold formatting
+			vim.keymap.set('v', '<leader>b', function()
+				formatter.toggle_format('**')
+			end, { noremap = true, silent = true, desc = 'Toggle Bold' })
 
-			-- Open today's daily note
-			vim.keymap.set("n", "<leader>od", ":ObsidianToday<CR>", opts)
+			-- Keymap to toggle italic formatting
+			vim.keymap.set('v', '<leader>i', function()
+				formatter.toggle_format('*')
+			end, { noremap = true, silent = true, desc = 'Toggle Italic' })
 
-			-- Open yesterday's daily note
-			vim.keymap.set("n", "<leader>oy", ":ObsidianYesterday<CR>", opts)
+			-- Keymap to toggle strikethrough formatting
+			vim.keymap.set('v', '<leader>s', function()
+				formatter.toggle_format('~~')
+			end, { noremap = true, silent = true, desc = 'Toggle Strikethrough' })
 		end,
 	},
 
-	-- Plugin to enhance the appearance of Markdown headers and quotes
+	-- Plugin to enhance the appearance of Markdown headers and bullet points
 	{
 		"lukas-reineke/headlines.nvim",
 		ft = "markdown",
 		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		config = function()
-			require("headlines").setup()
+			-- Define highlight groups for headlines and lists using your colors
+			vim.api.nvim_set_hl(0, "Headline1", { bg = "#DEAA79", fg = "#000000" })
+			vim.api.nvim_set_hl(0, "Headline2", { bg = "#FFE6A9", fg = "#000000" })
+			vim.api.nvim_set_hl(0, "Headline3", { bg = "#B1C29E", fg = "#000000" })
+			vim.api.nvim_set_hl(0, "Headline4", { bg = "#659287", fg = "#FFFFFF" })
+			vim.api.nvim_set_hl(0, "Headline5", { bg = "#DEAA79", fg = "#000000" })
+			vim.api.nvim_set_hl(0, "Headline6", { bg = "#FFE6A9", fg = "#000000" })
+			vim.api.nvim_set_hl(0, "ListMarker", { bg = "#659287", fg = "#FFFFFF" })
+
+			require("headlines").setup({
+				markdown = {
+					headline_highlights = {
+						"Headline1",
+						"Headline2",
+						"Headline3",
+						"Headline4",
+						"Headline5",
+						"Headline6",
+					},
+					list_highlight = "ListMarker",
+				},
+			})
 		end,
 	},
 
-	-- Markdown Preview plugin for live previewing your Markdown files
-	{
-		"iamcco/markdown-preview.nvim",
-		build = function()
-			vim.fn["mkdp#util#install"]()
-		end,
-		ft = { "markdown" },
-		config = function()
-			vim.g.mkdp_auto_start = 1
-		end,
-	},
-
-	-- Colorizer for highlighting color codes in Markdown
-	{
-		"norcalli/nvim-colorizer.lua",
-		ft = { "markdown" },
-		config = function()
-			require("colorizer").setup({ "*" }, { mode = "foreground" })
-		end,
-	},
+	-- Other plugin configurations...
 }
 
