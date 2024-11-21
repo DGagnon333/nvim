@@ -90,7 +90,7 @@ vim.keymap.set('v', '<', "<gv")
 
 vim.keymap.set('i', "<C-k>", 'k')
 
-vim.keymap.set('n', '<leader>ps', "<cmd>:w<CR>:so<CR>:Lazy sync<CR>")
+-- vim.keymap.set('n', '<leader>ps', "<cmd>:w<CR>:so<CR>:Lazy sync<CR>")
 -- vim.keymap.set('n', '<leader>ms', "<cmd>:w<CR>:so<CR>")
 vim.keymap.set('i', '<C-c>', '<Esc>')
 
@@ -112,8 +112,8 @@ vim.keymap.set('n', '<leader>mm', "<cmd>:messages<CR>", { desc = "Show messages"
 vim.keymap.set('n', '<leader>mc', "<cmd>:messages clear<CR>", { desc = "Show messages" })
 
 -- create new lines in Normal mode
-vim.keymap.set('n', '<leader>o', "o<Esc>^Da<Esc>k", { desc = 'Newline Below', silent = true })
-vim.keymap.set('n', '<leader>O', "O<Esc>^Da<Esc>j", { desc = 'Newline Above', silent = true })
+-- vim.keymap.set('n', '<leader>o', "o<Esc>^Da<Esc>k", { desc = 'Newline Below', silent = true })
+-- vim.keymap.set('n', '<leader>O', "O<Esc>^Da<Esc>j", { desc = 'Newline Above', silent = true })
 
 vim.keymap.set('i', '<S-tab>', '<esc><<i')
 

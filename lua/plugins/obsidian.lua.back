@@ -1,0 +1,64 @@
+return {
+  "epwalsh/obsidian.nvim",
+  version = "*", -- recommended, use the latest release instead of latest commit
+  lazy = true,
+  ft = "markdown",
+  dependencies = {
+    -- Required plugins
+    "nvim-lua/plenary.nvim",
+    "hrsh7th/nvim-cmp",
+    "nvim-telescope/telescope.nvim",
+    "echasnovski/mini.pick",
+    "ibhagwan/fzf-lua",
+    "nvim-treesitter/nvim-treesitter",
+    "epwalsh/pomo.nvim",
+  },
+  opts = {
+    workspaces = {
+      {
+        name = "personal",
+        path = "~/vaults/personal",
+      },
+      {
+        name = "work",
+        path = "~/vaults/work",
+      },
+    },
+    ui = {
+      enable = false, -- Disable additional UI features
+    },
+  },
+  config = function(_, opts)
+    require("obsidian").setup(opts)
+
+    -- Add commands for opening files in vaults
+    vim.api.nvim_create_user_command("ObsidianNewFile", function(args)
+      local obsidian = require("obsidian")
+      local workspace = obsidian.get_current_workspace()
+      if not workspace then
+        print("No active Obsidian workspace!")
+        return
+      end
+      local file_path = vim.fn.input("Enter file name: ", workspace.path .. "/", "file")
+      if file_path and file_path ~= "" then
+        vim.cmd("edit " .. file_path)
+      end
+    end, { nargs = 0 })
+
+    -- Add key mapping for creating a new file
+    vim.keymap.set("n", "<leader>on", ":ObsidianNewFile<CR>", { desc = "Create a new file in Obsidian vault" })
+
+    -- Add key mapping for quickly switching to a vault workspace
+    vim.keymap.set("n", "<leader>ow", function()
+      local obsidian = require("obsidian")
+      local workspace_names = vim.tbl_map(function(ws) return ws.name end, obsidian.get_workspaces())
+      vim.ui.select(workspace_names, { prompt = "Select a workspace:" }, function(selected)
+        if selected then
+          obsidian.set_current_workspace(selected)
+          print("Switched to workspace: " .. selected)
+        end
+      end)
+    end, { desc = "Switch Obsidian workspace" })
+  end,
+}
+
