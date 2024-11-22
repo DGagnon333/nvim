@@ -62,8 +62,8 @@ local function create_or_move(direction)
 end
 vim.keymap.set('n', '<S-h>', function() create_or_move('h') end, { desc = 'Goto or create left buffer', silent = true })
 vim.keymap.set('n', '<S-l>', function() create_or_move('l') end, { desc = 'Goto or create right buffer', silent = true })
-vim.keymap.set('n', '<S-j>', function() create_or_move('j') end, { desc = 'Goto or create below buffer', silent = true })
-vim.keymap.set('n', '<S-k>', function() create_or_move('k') end, { desc = 'Goto or create above buffer', silent = true })
+-- vim.keymap.set('n', '<S-j>', function() create_or_move('j') end, { desc = 'Goto or create below buffer', silent = true })
+-- vim.keymap.set('n', '<S-k>', function() create_or_move('k') end, { desc = 'Goto or create above buffer', silent = true })
 
 -- vim.keymap.set('n', "<S-q>", '<cmd>:q<CR>', { desc = "Close Without Saving" })
 

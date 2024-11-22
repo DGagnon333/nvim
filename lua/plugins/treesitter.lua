@@ -9,6 +9,9 @@ return {
 		ensure_installed = {
 			"markdown",
 			"markdown_inline",
+			"typescript",
+			"c_sharp",
+			"python"
 		},
 		auto_install = true,
 		sync_install = false,

@@ -24,6 +24,7 @@ local ops = {
 	}
 }
 
+require('config.lsp')
 require("config.options")
 
 require("lazy").setup({
@@ -56,3 +57,4 @@ require("lazy").setup({
 
 require("config.autocmds")
 require("config.keymap")
+require('custom')
